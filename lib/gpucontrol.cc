@@ -56,28 +56,6 @@ GPUControl::reset()
     GPUBlock::reset();
 }
 
-uint32_t
-GPUControl::readReg(RegAddr addr)
-{
-    switch (addr.value) {
-      case SHADER_READY_LO:
-      case SHADER_READY_HI:
-      case TILER_READY_LO:
-      case TILER_READY_HI:
-      case L2_READY_LO:
-      case L2_READY_HI:
-      case L3_READY_LO:
-      case L3_READY_HI:
-        // Fake ready values by assuming that anything that is present
-        // is ready.
-        return regs[RegAddr(SHADER_PRESENT_LO +
-                            (addr.value - SHADER_READY_LO))];
-
-      default:
-        return GPUBlockInt::readReg(addr);
-    }
-}
-
 void
 GPUControl::writeReg(RegAddr addr, uint32_t value)
 {
@@ -92,6 +70,38 @@ GPUControl::writeReg(RegAddr addr, uint32_t value)
       case GPU_COMMAND:
         gpuCommand(value);
         break;
+
+      case SHADER_PWRON_LO:
+      case SHADER_PWRON_HI:
+      case TILER_PWRON_LO:
+      case TILER_PWRON_HI:
+      case L2_PWRON_LO:
+      case L2_PWRON_HI:
+      case L3_PWRON_LO:
+      case L3_PWRON_HI: {
+          const RegAddr ready_reg(SHADER_READY_LO +
+                                  (addr.value - SHADER_PWRON_LO));
+          const RegAddr present_reg(SHADER_PRESENT_LO +
+                                    (addr.value - SHADER_PWRON_LO));
+
+          regs[ready_reg] |= value & regs[present_reg];
+          raiseInterrupt(POWER_CHANGED_SINGLE | POWER_CHANGED_ALL);
+      } break;
+
+      case SHADER_PWROFF_LO:
+      case SHADER_PWROFF_HI:
+      case TILER_PWROFF_LO:
+      case TILER_PWROFF_HI:
+      case L2_PWROFF_LO:
+      case L2_PWROFF_HI:
+      case L3_PWROFF_LO:
+      case L3_PWROFF_HI: {
+          const RegAddr ready_reg(SHADER_READY_LO +
+                                  (addr.value - SHADER_PWROFF_LO));
+
+          regs[ready_reg] &= ~value;
+          raiseInterrupt(POWER_CHANGED_SINGLE | POWER_CHANGED_ALL);
+      } break;
 
       default:
         // Ignore writes by default

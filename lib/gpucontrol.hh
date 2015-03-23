@@ -55,8 +55,7 @@ class GPUControl
 
     virtual void reset() override = 0;
 
-    uint32_t readReg(RegAddr idx)  override;
-    void writeReg(RegAddr idx, uint32_t value)  override;
+    void writeReg(RegAddr idx, uint32_t value) override;
 
   protected:
     void onInterrupt(int set) override;

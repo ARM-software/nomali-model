@@ -38,7 +38,7 @@ CLEAN := $(CLEAN) $(OBJS) $(TESTS)
 include Rules.app.mk
 
 $(d)/nomali_%: $(d)/nomali_%.o $(d)/test_helpers.o libnomali.so
-	$(CXX) $(LDFLAGS) -Wl,-rpath="$(CURDIR)" -o $@ $^
+	$(CXX) $(LDFLAGS) -Wl,-rpath -Wl,"$(CURDIR)" -o $@ $^
 
 d		:= $(dirstack_$(sp))
 sp		:= $(basename $(sp))

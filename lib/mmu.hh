@@ -48,8 +48,6 @@ class MMU
 
   protected:
     void onInterrupt(int set) override;
-
-    RegVector regs;
 };
 
 }

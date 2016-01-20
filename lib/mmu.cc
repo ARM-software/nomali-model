@@ -29,8 +29,7 @@ MMU::MMU(GPU &_gpu)
                   RegAddr(MMU_IRQ_RAWSTAT),
                   RegAddr(MMU_IRQ_CLEAR),
                   RegAddr(MMU_IRQ_MASK),
-                  RegAddr(MMU_IRQ_STATUS)),
-      regs(BLOCK_NUM_REGS)
+                  RegAddr(MMU_IRQ_STATUS))
 {
 }
 
